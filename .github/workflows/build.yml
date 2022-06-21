@@ -20,6 +20,9 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v3
 
+      - name: Build project
+        run: python setup.py bdist_wheel
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
