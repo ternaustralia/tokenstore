@@ -27,13 +27,12 @@ def authorize(provider):
         abort(404)
 
     # store return url after authorization
-    came_from = (
-        params.query.get("return_url")
-        or request.referrer
-    )
+    came_from = params.query.get("return_url") or request.referrer
 
     # create redirect response plus session state for redirect validation (including nonce and state)
-    redirect_uri = url_for("api_v1.tokenstore_redirect_uri", provider=provider_id, _external=True)
+    redirect_uri = url_for(
+        "api_v1.tokenstore_redirect_uri", provider=provider_id, _external=True
+    )
     rv = provider.create_authorization_url(redirect_uri=redirect_uri, prompt="consent")
     provider.save_authorize_data(redirect_uri=redirect_uri, **rv)
 
@@ -67,14 +66,18 @@ def return_uri(provider):
 
     token_user_id = token["userinfo"]["sub"]
     # validate user id claim ... token returned must be for same user
-    if (token_user_id != state_data["user_id"]):
+    if token_user_id != state_data["user_id"]:
         abort(403)
 
     # update token in db
-    db_token = db.session.query(RefreshToken).filter_by(
-        provider=provider_id,
-        user_id=state_data["user_id"],
-    ).one_or_none()
+    db_token = (
+        db.session.query(RefreshToken)
+        .filter_by(
+            provider=provider_id,
+            user_id=state_data["user_id"],
+        )
+        .one_or_none()
+    )
     if db_token is None:
         # create a new one
         db_token = RefreshToken(
@@ -83,10 +86,12 @@ def return_uri(provider):
         )
         db.session.add(db_token)
     # update db token (encrypt at rest)
-    db_token.token = crypto.encrypt(token['refresh_token'])
-    db_token.expires_in = token['refresh_expires_in']
+    db_token.token = crypto.encrypt(token["refresh_token"])
+    db_token.expires_in = token["refresh_expires_in"]
     if db_token.expires_in != 0:
-        db_token.expires_at = token['expires_at'] - token['expires_in'] + token['refresh_expires_in']
+        db_token.expires_at = (
+            token["expires_at"] - token["expires_in"] + token["refresh_expires_in"]
+        )
     else:
         db_token.expires_at = None
 
@@ -98,4 +103,4 @@ def return_uri(provider):
     #       can we just pass oidc error on ?
     #       would probably error somewhere above in provider.authorize_access_token()
     # TODO: came_from may be empty ... where to go ?
-    return redirect(state_data['came_from'])
+    return redirect(state_data["came_from"])

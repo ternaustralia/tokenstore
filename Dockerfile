@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.15
+ARG ALPINE_VERSION=3.16
 
 # BUILD and install code
 FROM alpine:${ALPINE_VERSION} as builder

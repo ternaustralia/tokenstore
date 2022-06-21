@@ -97,12 +97,14 @@ def create_app(config=None) -> Flask:
     # Setup token providers
     #############################################
     from tokenstore import providers
+
     providers.init_app(app)
 
     #############################################
     # Setup crypto tool
     #############################################
     from tokenstore import crypto
+
     crypto.init_app(app)
 
     ##############################################

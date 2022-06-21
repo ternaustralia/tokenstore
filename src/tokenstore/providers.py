@@ -23,16 +23,25 @@ def init_app(app):
       - .......
     """
     # TODO: nothing to do yet .... but probably want to validate settings in some way
-    for provider_id in (x.strip() for x in app.config.get("TOKEN_PROVIDERS", "").split(",") if x.strip()):
+    for provider_id in (
+        x.strip() for x in app.config.get("TOKEN_PROVIDERS", "").split(",") if x.strip()
+    ):
         # rename DISCOVER_URL to SERVER_METADATA_URL
-        app.config["{}_SERVER_METADATA_URL".format(provider_id.upper())] = app.config["{}_DISCOVERY_URL".format(provider_id).upper()]
+        app.config["{}_SERVER_METADATA_URL".format(provider_id.upper())] = app.config[
+            "{}_DISCOVERY_URL".format(provider_id).upper()
+        ]
         md = {}
         for key in ("name", "url", "icon", "description", "logo"):
             provider_key = "{}_md_{}".format(provider_id, key).upper()
             md[key] = app.config.get(provider_key, None)
         oauth.register(
             provider_id,
-            client_kwargs={"scope": app.config.get("{}_SCOPE".format(provider_id.upper()), "openid email offline_access")},
+            client_kwargs={
+                "scope": app.config.get(
+                    "{}_SCOPE".format(provider_id.upper()),
+                    "openid email offline_access",
+                )
+            },
             metadata=md,
         )
 

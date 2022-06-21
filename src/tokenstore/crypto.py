@@ -11,17 +11,13 @@ def init_app(app):
 
 
 class CryptoTool:
-
     def __init__(self, config):
         keys = [
             self._validate_key(key.strip())
-            for key in
-            config.get('CRYPTOKEY').split(',')
+            for key in config.get("CRYPTOKEY").split(",")
             if key.strip()
         ]
-        self.fernet = MultiFernet(
-            Fernet(base64.urlsafe_b64encode(key)) for key in keys
-        )
+        self.fernet = MultiFernet(Fernet(base64.urlsafe_b64encode(key)) for key in keys)
 
     def _validate_key(self, key):
         # key raw(32bytes), base64(44bytes), hex(64bytes)
@@ -44,11 +40,11 @@ class CryptoTool:
 
     def encrypt(self, data):
         # need binary / bytes to encrypt
-        return self.fernet.encrypt(data.encode('utf-8'))
+        return self.fernet.encrypt(data.encode("utf-8"))
 
     # TODO: this may throw an InvalidToken Exception?
     def decrypt(self, data):
-        return self.fernet.decrypt(data).decode('utf-8')
+        return self.fernet.decrypt(data).decode("utf-8")
 
 
 def encrypt(data):
