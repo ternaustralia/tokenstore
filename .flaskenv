@@ -1,0 +1,4 @@
+FLASK_APP=tokenstore
+FLASK_ENV=development
+
+TOKENSTORE_SETTINGS=development.cfg
