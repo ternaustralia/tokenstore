@@ -12,10 +12,11 @@ jobs:
   test:
     uses: ternaustralia/tokenstore/.github/workflows/test.yml@main
 
-build:
+  build:
     needs: test
     runs-on: ubuntu-latest
 
+    steps:
       - name: Checkout the repo
         uses: actions/checkout@v3
 
